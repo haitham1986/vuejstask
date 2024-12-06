@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Article Search</title>
+    <style>
+        .highlight {
+            background-color: yellow;
+        }
+        .article {
+            margin: 20px 0;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+        body {
+            background-color: #f0f0f0; ;
+            padding:25px;
+        }
+        input {
+            padding: 10px;
+            width: 100%;
+            font-size: 16px;
+            margin-bottom: 20px;
+border : 1px solid #ddd;
+        }
+
+        .total-posts {
+            margin-top: 20px;
+        }
+	.total-posts strong{
+            font-weight: bold;
+        }
+
+        .date {
+            font-style: italic;
+    font-size: 0.9em;
+    color: gray;
+    margin-top: 10px;
+    display: block;
+}
+    </style>
+</head>
+<body>
+    <div id="app">
+<h1>Search</h1>
+        <input type="text" v-model="searchTerm" placeholder="Search articles..." />
+        <div class="total-posts">
+            <span v-if="filteredArticles.length" >
+                <strong>{{ filteredArticles.length }}</strong> posts were found
+            </span>
+            <span v-else>
+                No posts found
+            </span>
+        </div>
+
+        <!-- Displaying the filtered and highlighted articles -->
+        <div v-for="(article, index) in filteredArticles" :key="index" class="article">
+            <h3>{{ article.title }}
+                <!-- Display dynamic date -->
+                <span class="date">{{ formatDate(article.date) }}</span>
+            </h3>
+            <p v-html="highlightText(article.content)"></p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14/dist/vue.js"></script>
+    <script>
+        new Vue({
+            el: "#app",
+            data: {
+                searchTerm: "",
+                articles: [
+                    {
+                        title: "Vue.js for Beginners",
+                        content: "Lorem Ipsum has been vue the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type",
+                        date: "2024-10-09" 
+                    },
+                    {
+                        title: "Introduction to React",
+                        content: "Lorem Ipsum has been the React industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type",
+                        date: "2024-09-15"
+                    },
+                    {
+                        title: "Mastering JavaScript",
+                        content: "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type",
+                        date: "2024-08-20"
+                    },
+                    {
+                        title: "Getting Started with Angular",
+                        content: "Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a typeLorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type",
+                        date: "2024-07-25"
+                    }
+                ]
+            },
+            computed: {
+                filteredArticles() {
+                    if (!this.searchTerm) {
+                        return this.articles; // No search term, return all articles
+                    }
+                    return this.articles.filter(article => 
+                        article.content.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+                        article.title.toLowerCase().includes(this.searchTerm.toLowerCase())
+                    );
+                }
+            },
+            methods: {
+                formatDate(dateString) {
+                    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+                    const date = new Date(dateString); // Convert the date string to a Date object
+                    return date.toLocaleDateString('en-US', options);
+                },
+
+                highlightText(text) {
+                    if (!this.searchTerm) return text; // If no search term, return the text as is
+                    const regex = new RegExp(`(${this.searchTerm})`, "gi"); // Create a regex to match the search term (case insensitive)
+                    return text.replace(regex, '<span class="highlight">$1</span>'); 
+                }
+            }
+        });
+    </script>
+</body>
+</html>
